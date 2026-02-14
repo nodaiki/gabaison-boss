@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3110:3110"
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+
+volumes:
+  node_modules:
