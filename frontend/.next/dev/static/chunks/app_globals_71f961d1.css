@@ -5,11 +5,7 @@
   padding: 0;
 }
 
-html {
-  background: #06000f;
-}
-
-body {
+html, body {
   color: #fff;
   background: none;
   font-family: Helvetica Neue, Arial, sans-serif;
