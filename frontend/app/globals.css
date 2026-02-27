@@ -4,13 +4,8 @@
   padding: 0;
 }
 
-html {
-  background: #06000f;
-}
-
-body {
+html, body {
   background: transparent;
   color: #fff;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  /* overflow: hidden は絶対に書かない */
 }
