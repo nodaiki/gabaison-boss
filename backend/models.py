@@ -14,7 +14,6 @@ class User(Base):
     password = Column(String(255), nullable=False)
     created_date_time = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
 
-
 class Task(Base):
     __tablename__ = "tasks"
 
