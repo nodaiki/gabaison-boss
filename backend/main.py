@@ -1,6 +1,12 @@
 import os
 from fastapi import FastAPI
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
+from routers import auth
+import models
+from database import engine, Base
+
+# モデルからテーブルを作成（既存のテーブルがある場合はスキップされます）
+Base.metadata.create_all(bind=engine)
 
 from routers import task
 
@@ -10,7 +16,8 @@ engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 app = FastAPI()
 
-app.include_router(task.router)
+# ルーターの読み込み
+app.include_router(auth.router)
 
 @app.get("/health")
 def health():
