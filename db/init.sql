@@ -61,20 +61,21 @@ VALUES
 ('User3', 'user3@example.com', 'password3'),
 ('User4', 'user4@example.com', 'password4');
 
-
--- タスクを1つ作成
-WITH new_task AS (
+-- タスクを2つ作成
+WITH new_tasks AS (
     INSERT INTO tasks (name, planet_id, goal_time, total_time, leave_time, online_member_count)
-    VALUES ('Sample Task', 5, 100000, 28800, 71200, 4)
+    VALUES 
+    ('Sample Task1', 5, 100000, 28800, 71200, 4),
+    ('Sample Task2', 7, 200000, 28800, 71200, 4)
     RETURNING id
 ),
 
--- taskに4人のユーザーをアサイン
+-- 各タスクに4人のユーザーをアサイン
 new_members AS (
     INSERT INTO members (user_id, task_id, sum_time)
     SELECT u.id, t.id, 7200
     FROM users u
-    CROSS JOIN new_task t
+    CROSS JOIN new_tasks t
     RETURNING id
 )
 

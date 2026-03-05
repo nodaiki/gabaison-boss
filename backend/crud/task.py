@@ -7,6 +7,7 @@ from schemas.task import TaskCreate
 
 def create_task(db: Session, task: TaskCreate):
 
+
     db_task = Task(
         name=task.name,
         planet_id=task.planet_id,
@@ -47,3 +48,27 @@ def create_task(db: Session, task: TaskCreate):
         "task_id": db_task.id,
         "members": response_members
     }
+
+
+
+def get_member_tasks_by_user(db: Session, user_id):
+
+    rows = (
+        db.query(Member, Task)
+        .join(Task, Member.task_id == Task.id)
+        .filter(Member.user_id == user_id)
+        .all()
+    )
+
+    result = []
+
+    for member, task in rows:
+        result.append({
+            "member_id": member.id,
+            "task_name": task.name,
+            "total_time": task.total_time,
+            "planet_id": task.planet_id,
+            "online_member_count": task.online_member_count
+        })
+
+    return result
