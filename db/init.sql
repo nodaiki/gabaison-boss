@@ -15,12 +15,12 @@ CREATE TABLE users (
 	created_date_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE tasks (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	name VARCHAR(100) NOT NULL,
     goal_time integer NOT NULL,
     total_time integer NOT NULL,
+    leave_time integer Not NULL,
     online_member_count integer NOT NULL,
 	created_date_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
