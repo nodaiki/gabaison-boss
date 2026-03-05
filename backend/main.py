@@ -18,6 +18,7 @@ app = FastAPI()
 
 # ルーターの読み込み
 app.include_router(auth.router)
+app.include_router(task.router)
 
 @app.get("/health")
 def health():

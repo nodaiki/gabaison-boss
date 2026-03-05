@@ -1,31 +1,15 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from models.task import Task
-from models.user import User
-from models.planet import Planet
-from models.member import Member
-
+from models import Task, User, Member
 from schemas.task import TaskCreate
 
 
-def create_task(db: Session, task: schemas.TaskCreate):
+def create_task(db: Session, task: TaskCreate):
 
-    # planet取得
-    planet = (
-        db.query(models.Planet)
-        .filter(models.Planet.id == task.planet_id)
-        .first()
-    )
-
-    if not planet:
-        raise HTTPException(status_code=404, detail="planet not found")
-
-    # task作成
-    db_task = models.Task(
+    db_task = Task(
         name=task.name,
-        planet_id=task.planet_id,
-        goal_time=planet.planet_time,
+        goal_time=task.goal_time,
         sum_time=0,
         online_member_count=0
     )
@@ -33,30 +17,31 @@ def create_task(db: Session, task: schemas.TaskCreate):
     db.add(db_task)
     db.flush()
 
-    # emailからuser取得
-    users = (
-        db.query(models.User)
-        .filter(models.User.email.in_(task.member_emails))
-        .all()
-    )
-    if len(users) != len(task.member_emails):
-        raise HTTPException(400, "Some users not found")
+    users = db.query(User).filter(User.email.in_(task.member_emails)).all()
 
-    # member作成
+    if len(users) != len(task.member_emails):
+        raise HTTPException(status_code=400, detail="Some users not found")
+
     members = []
+    response_members = []
 
     for user in users:
-        members.append(
-            models.Member(
-                user_id=user.id,
-                task_id=db_task.id,
-                sum_time=0
-            )
+        member = Member(
+            user_id=user.id,
+            task_id=db_task.id,
+            sum_time=0
         )
 
-    db.add_all(members)
+        db.add(member)
+        db.flush()
+
+        response_members.append({
+            "member_id": member.id
+        })
 
     db.commit()
-    db.refresh(db_task)
 
-    return db_task
+    return {
+        "task_id": db_task.id,
+        "members": response_members
+    }

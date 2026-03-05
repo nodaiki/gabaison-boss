@@ -19,7 +19,7 @@ def get_db():
         db.close()
 
 
-@router.post("/")
+@router.post("/task")
 def create_task(
     task: schemas.TaskCreate,
     db: Session = Depends(get_db)
