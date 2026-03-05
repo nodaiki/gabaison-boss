@@ -1,8 +1,8 @@
 -- DB作成
-CREATE DATABASE sample_db;
+-- CREATE DATABASE sample_db;
 
 -- 作成したDBに接続
-\c sample_db;
+-- \c sample_db;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
