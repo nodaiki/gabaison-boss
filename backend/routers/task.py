@@ -1,27 +1,19 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from database import get_db
 
 from database import SessionLocal
 import crud.task as crud
-import schemas.task as schemas
+from schemas.task import TaskCreate, MemberResponse, TaskCreateResponse
 
 router = APIRouter(
     prefix="/tasks",
     tags=["tasks"]
 )
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-@router.post("/task")
+@router.post("/task", response_model=TaskCreateResponse)
 def create_task(
-    task: schemas.TaskCreate,
+    task: TaskCreate,
     db: Session = Depends(get_db)
 ):
     return crud.create_task(db, task)

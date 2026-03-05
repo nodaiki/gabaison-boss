@@ -8,7 +8,7 @@ from database import engine, Base
 # モデルからテーブルを作成（既存のテーブルがある場合はスキップされます）
 Base.metadata.create_all(bind=engine)
 
-from routers import task
+from routers import task,endTime
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
@@ -19,6 +19,9 @@ app = FastAPI()
 # ルーターの読み込み
 app.include_router(auth.router)
 app.include_router(task.router)
+app.include_router(endTime.router)
+
+
 
 @app.get("/health")
 def health():

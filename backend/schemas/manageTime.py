@@ -11,3 +11,13 @@ class StartResponse(BaseModel):
     total_time: int #FROM tasks
     leave_time: int #FROM tasks
     online_member_count: int #FROM tasks
+
+
+class EndTimeResponse(BaseModel):
+    message: str
+    added_time: int
+    task_total_time: int
+    leave_time: int
+
+    class Config:
+        from_attributes = True
