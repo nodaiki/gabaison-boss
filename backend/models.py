@@ -41,7 +41,7 @@ class Time(Base):
     member_id = Column(UUID(as_uuid=True), ForeignKey("members.id"), nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=True)
-    total_time = Column(Integer, nullable=True)
+    sum_time = Column(Integer, nullable=True)
     created_date_time = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     
