@@ -10,7 +10,8 @@ def create_task(db: Session, task: TaskCreate):
     db_task = Task(
         name=task.name,
         goal_time=task.goal_time,
-        sum_time=0,
+        total_time=0,
+        leave_time=task.goal_time,
         online_member_count=0
     )
 
