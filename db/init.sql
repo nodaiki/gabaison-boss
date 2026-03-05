@@ -63,8 +63,8 @@ VALUES
 
 -- タスクを1つ作成
 WITH new_task AS (
-    INSERT INTO tasks (name, goal_time, total_time, online_member_count)
-    VALUES ('Sample Task', 100000, 28800, 4)
+    INSERT INTO tasks (name, goal_time, total_time, leave_time, online_member_count)
+    VALUES ('Sample Task', 100000, 28800, 71200, 4)
     RETURNING id
 ),
 
