@@ -19,5 +19,5 @@ def get_db():
 @router.post("/start", response_model=StartWorkingResponse)
 def start_working(member: StartWorking, db: Session = Depends(get_db)):
     crud.create_time(db=db, member=member)
-    
+    crud.increment_online_member_count(db=db, member_id=member.member_id)
     return crud.get_task_by_member_id(db=db, member_id=member.member_id)
