@@ -22,7 +22,7 @@ def end_time(db: Session, time_id):
     sum_time = int(diff.total_seconds())
 
     time_record.sum_time = sum_time
-
+    db.flush()
     member_id = time_record.member_id
 
     # membersを計算して更新
@@ -52,7 +52,7 @@ def end_time(db: Session, time_id):
     task.total_time = task_sum
     task.online_member_count -= 1
 
-    leave_time = task.goal_time - task.total_time
+    task.leave_time = task.goal_time - task.total_time
 
     db.commit()
 
@@ -60,6 +60,6 @@ def end_time(db: Session, time_id):
         "message": "time updated",
         "member_sum_time": member_sum,
         "task_total_time": task.total_time,
-        "leave_time": leave_time,
+        "leave_time": task.leave_time,
         "online_member_count": task.online_member_count
     }

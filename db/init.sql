@@ -17,6 +17,7 @@ CREATE TABLE users (
 
 CREATE TABLE tasks (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    planet_id integer NOT NULL,
 	name VARCHAR(100) NOT NULL,
     goal_time integer NOT NULL,
     total_time integer NOT NULL,
@@ -63,8 +64,8 @@ VALUES
 
 -- タスクを1つ作成
 WITH new_task AS (
-    INSERT INTO tasks (name, goal_time, total_time, leave_time, online_member_count)
-    VALUES ('Sample Task', 100000, 28800, 71200, 4)
+    INSERT INTO tasks (name, planet_id, goal_time, total_time, leave_time, online_member_count)
+    VALUES ('Sample Task', 5, 100000, 28800, 71200, 4)
     RETURNING id
 ),
 
