@@ -2,3 +2,9 @@ fastapi
 uvicorn[standard]
 sqlalchemy>=2.0
 psycopg[binary]
+passlib[bcrypt]
+bcrypt==4.0.1  # ← これを追加してバージョンを固定する
+python-jose[cryptography]
+python-multipart
+email-validator
+python-dotenv
