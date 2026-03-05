@@ -22,7 +22,7 @@ def end_time(db: Session, time_id):
     sum_time = int(diff.total_seconds())
 
     time_record.sum_time = sum_time
-
+    db.flush()
     member_id = time_record.member_id
 
     # membersを計算して更新
