@@ -41,4 +41,14 @@ class Member(Base):
 
     created_date_time = Column(DateTime, server_default=func.now())
 
+class Time(Base):
+    __tablename__ = "times"
+ 
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    member_id = Column(UUID(as_uuid=True), ForeignKey("members.id"), nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=True)
+    total_time = Column(Integer, nullable=True)
+    created_date_time = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+
     
