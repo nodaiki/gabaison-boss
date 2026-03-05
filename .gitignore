@@ -14,8 +14,13 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+# これだけで、どの階層の node_modules も .next も無視されます
+node_modules/
+.next/
+.env*
+build/
+out/
+
 
 # production
 /build
