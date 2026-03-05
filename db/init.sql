@@ -1,8 +1,8 @@
 -- DB作成
-CREATE DATABASE sample_db;
+-- CREATE DATABASE sample_db;
 
 -- 作成したDBに接続
-\c sample_db;
+-- \c sample_db;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -59,3 +59,4 @@ CREATE INDEX idx_members_user_id ON members(user_id);
 CREATE INDEX idx_members_task_id ON members(task_id);
 CREATE INDEX idx_times_member_id ON times(member_id);
 CREATE INDEX idx_tasks_planet_id ON tasks(planet_id);
+
