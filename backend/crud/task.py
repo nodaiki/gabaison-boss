@@ -9,6 +9,7 @@ def create_task(db: Session, task: TaskCreate):
 
     db_task = Task(
         name=task.name,
+        planet_id=task.planet_id,
         goal_time=task.goal_time,
         total_time=0,
         leave_time=task.goal_time,

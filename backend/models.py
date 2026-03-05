@@ -21,9 +21,10 @@ class Task(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False)
-
+    planet_id = Column(Integer, nullable=False)
     goal_time = Column(Integer, nullable=False)
     total_time = Column(Integer, nullable=False, default=0)
+    leave_time = Column(Integer, nullable=False, default=goal_time)
     online_member_count = Column(Integer, nullable=False, default=0)
 
     created_date_time = Column(TIMESTAMP, server_default=func.now())

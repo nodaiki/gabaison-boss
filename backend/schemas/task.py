@@ -4,7 +4,9 @@ from typing import List
 
 class TaskCreate(BaseModel):
     name: str
-    goal_time: int   
+    planet_id: int
+    goal_time: int
+    leave_time: int
     member_emails: List[EmailStr]
 
 class MemberResponse(BaseModel):
