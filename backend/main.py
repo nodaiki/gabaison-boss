@@ -8,7 +8,7 @@ from database import engine, Base
 # モデルからテーブルを作成（既存のテーブルがある場合はスキップされます）
 Base.metadata.create_all(bind=engine)
 
-from routers import task,endTime
+from routers import endTime
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)

@@ -17,3 +17,14 @@ class TaskCreateResponse(BaseModel):
     members: List[MemberResponse]
 
 
+
+class MemberTaskInfo(BaseModel):
+    member_id: UUID
+    task_name: str
+    total_time: int
+    planet_id: int
+    online_member_count: int
+
+
+class MemberTaskResponse(BaseModel):
+    members: List[MemberTaskInfo]
