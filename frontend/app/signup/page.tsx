@@ -426,7 +426,7 @@ export default function RegisterPage(): React.JSX.Element {
           {/* Header */}
           <div className="panel-boot" style={{ marginBottom: "14px", textAlign: "center" }}>
             <div className="stm" style={{ fontSize: "30px", letterSpacing: "6px", color: "rgb(255,255,255)", marginBottom: "6px" }}>
-              WarpDrive Pomodoro
+              Ten Billion Drive
             </div>
             <div className="orb glitch" style={{ fontSize: "min(max(7px,2.2vw),15px)", fontWeight: 900, color: "#fff", textShadow: "0 0 28px rgba(0,220,140,0.5)", letterSpacing: "0.1em" }}>
               新規登録
