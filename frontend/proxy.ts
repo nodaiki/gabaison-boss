@@ -2,15 +2,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function proxy(request: NextRequest): NextResponse {
-  const token = request.cookies.get("auth_token")?.value;
+  const token = request.cookies.get("access_token")?.value;
+  const frontendAuth = request.cookies.get("frontend_auth")?.value;
   const { pathname } = request.nextUrl;
 
-  const isPublic = pathname.startsWith("/login") ||
-                   pathname.startsWith("/signup");
+  const isPublic =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup");
 
-  // if (!isPublic && !token) {
-  //   return NextResponse.redirect(new URL("/login", request.url));
-  // }
+  const hasSession = Boolean(token) || frontendAuth === "1";
+  if (!isPublic && !hasSession) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   return NextResponse.next();
 }

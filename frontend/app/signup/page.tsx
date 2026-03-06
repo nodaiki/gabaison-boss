@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, FC } from "react";
+import { useRouter } from "next/navigation"; // 追加
+import { buildApiUrl } from "@/lib/api";
 
 /* ── Types ── */
 interface StarDot {
@@ -344,6 +346,7 @@ type StatusState = "idle" | "scanning" | "complete";
 export default function RegisterPage(): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const router = useRouter(); // 追加
   const [form, setForm] = useState<FormState>({ username: "", email: "", pass: "" });
   const [status,   setStatus]   = useState<string>("REGISTRATION TERMINAL READY");
   const [statusSt, setStatusSt] = useState<StatusState>("idle");
@@ -358,27 +361,50 @@ export default function RegisterPage(): React.JSX.Element {
     setError("");
   }, []);
 
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { username, email, pass } = form;
-    if (!username || !email || !pass) { setError("ALL FIELDS REQUIRED"); return; }
-    if (passStrength(pass) < 2) { setError("ACCESS CODE TOO WEAK"); return; }
+    
+    if (!username || !email || !pass) { setError("すべての項目を入力してください"); return; }
+    if (passStrength(pass) < 2) { setError("パスワードが脆弱すぎます"); return; }
+
     setError("");
     setStatusSt("scanning");
-    const steps: [number, string, StatusState][] = [
-      [0,    "REGISTERING CREW MEMBER...", "scanning"],
-      [800,  "ALLOCATING CREW ID...",      "scanning"],
-      [1600, "INITIALIZING PROFILE...",    "scanning"],
-      [2400, "ISSUING CREDENTIALS...",     "scanning"],
-      [3200, "REGISTRATION COMPLETE",      "complete"],
-    ];
-    steps.forEach(([delay, msg, st]) => {
-      setTimeout(() => {
-        setStatus(msg); setStatusSt(st);
-        if (st === "complete") setTimeout(() => setSuccess(true), 400);
-      }, delay);
-    });
-  }, [form]);
+    setStatus("INITIALIZING UPLINK...");
+
+    try {
+      const res = await fetch(buildApiUrl("/auth/register"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: username.trim(),     // 前後の空白を削除
+          email: email.trim(),       // 前後の空白を削除
+          password: pass,            // パスワードはそのまま
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || "登録に失敗しました");
+      }
+
+      // 演出用ステップ
+      setStatus("ALLOCATING CREW ID...");
+      await new Promise(r => setTimeout(r, 800));
+      setStatus("REGISTRATION COMPLETE");
+      setStatusSt("complete");
+      
+      setTimeout(() => setSuccess(true), 400);
+
+    } catch (err: any) {
+      const message = err?.message === "Failed to fetch"
+        ? "APIサーバーに接続できません（URL/起動状態を確認してください）"
+        : String(err?.message ?? "登録に失敗しました");
+      setError(message.toUpperCase());
+      setStatus("ERROR DETECTED");
+      setStatusSt("idle");
+    }
+  };
 
   const sc       = passStrength(form.pass);
   const strColor = STR_COLORS[sc] ?? "#1a2530";

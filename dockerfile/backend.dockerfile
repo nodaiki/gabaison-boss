@@ -11,5 +11,5 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 # アプリ本体
 COPY backend/ /app/
 
-EXPOSE 8100
+EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

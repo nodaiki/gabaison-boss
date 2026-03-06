@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, FC } from "react";
+import { useRouter } from "next/navigation";
 
 
 /* ── Types ── */
@@ -115,7 +116,6 @@ const StarBackground: FC<StarBgProps> = ({ canvasRef }) => {
 
       /* Large volume blobs — base nebula colour */
       const blobs: [number,number,number,number,number,number][] = [
-        /* cx%,  cy%,  r%,    H,   S%,  maxA */
         [0.72, 0.25, 0.38,  25,  80,  0.060],  /* orange-red right */
         [0.80, 0.40, 0.26, 200, 100,  0.038],  /* faint purple */
         [0.12, 0.60, 0.32, 270,  90,  0.050],  /* magenta-pink left */
@@ -180,11 +180,11 @@ const StarBackground: FC<StarBgProps> = ({ canvasRef }) => {
       nc.save();
       nc.translate(W*0.5, H*0.5); nc.rotate(-0.28);
       const dust2 = nc.createLinearGradient(0, -H*0.08, 0, H*0.08);
-      dust2.addColorStop(0,   "transparent");
+      dust2.addColorStop(0,    "transparent");
       dust2.addColorStop(0.3, "rgba(0,0,0,0.040)");
       dust2.addColorStop(0.5, "rgba(0,0,0,0.065)");
       dust2.addColorStop(0.7, "rgba(0,0,0,0.040)");
-      dust2.addColorStop(1,   "transparent");
+      dust2.addColorStop(1,    "transparent");
       nc.fillStyle = dust2; nc.fillRect(-W*0.9, -H*0.08, W*1.8, H*0.16);
       nc.restore();
     };
@@ -327,32 +327,64 @@ type StatusState = "idle" | "scanning" | "granted";
 
 export default function LoginPage(): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const router = useRouter();
 
-  const [user,     setUser]     = useState<string>("");
-  const [pass,     setPass]     = useState<string>("");
-  const [status,   setStatus]   = useState<string>("AWAITING INPUT");
+  const [user,      setUser]      = useState<string>("");
+  const [pass,      setPass]      = useState<string>("");
+  const [status,    setStatus]    = useState<string>("AWAITING INPUT");
   const [statusSt, setStatusSt] = useState<StatusState>("idle");
-  const [error,    setError]    = useState<string>("");
-  const [mounted,  setMounted]  = useState<boolean>(false);
+  const [error,     setError]     = useState<string>("");
+  const [mounted,   setMounted]   = useState<boolean>(false);
 
   useEffect(() => { setMounted(true); }, []);
 
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user || !pass) { setError("入力されていない項目があります"); return; }
+    
     setError("");
     setStatusSt("scanning");
+    setStatus("VERIFYING CREDENTIALS...");
 
-    const steps: [number, string, StatusState][] = [
-      [0,    "SCANNING CREW ID...",          "scanning"],
-      [900,  "VERIFYING ACCESS CODE...",     "scanning"],
-      [1800, "CROSS-REFERENCING DATABASE...", "scanning"],
-      [2800, "ACCESS GRANTED",               "granted"],
-    ];
-    steps.forEach(([delay, msg, st]) => {
-      setTimeout(() => { setStatus(msg); setStatusSt(st); }, delay);
-    });
-  }, [user, pass]);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // credentials: "include" により、サーバーからのSet-Cookieをブラウザが保存できるようにする
+        credentials: "include",
+        body: JSON.stringify({
+          email: user,
+          password: pass,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || "認証に失敗しました");
+      }
+
+      // 演出用ステップ
+      setStatus("SYNCING BIO-METRICS...");
+      await new Promise(r => setTimeout(r, 900));
+      setStatus("ACCESS GRANTED");
+      setStatusSt("granted");
+
+      // 出発時に task.create へ渡すためのユーザー識別情報を保持
+      localStorage.setItem("login_email", user.trim());
+      document.cookie = "frontend_auth=1; Path=/; Max-Age=86400; SameSite=Lax";
+
+      // 1.5秒後にルートディレクトリ (/) へ遷移
+      setTimeout(() => {
+        router.push("/goal");
+      }, 1500);
+
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "認証に失敗しました";
+      setError(message.toUpperCase());
+      setStatus("DENIED");
+      setStatusSt("idle");
+    }
+  };
 
   const ledClass =
     statusSt === "scanning" ? "led led-warn" :
